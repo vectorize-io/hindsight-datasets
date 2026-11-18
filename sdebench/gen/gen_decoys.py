@@ -9,7 +9,7 @@ an LLM to write a multi-turn dev conversation *about that area of the code* — 
 debugging, trade-offs — WITHOUT stating any of the benchmark's planted policies. Deterministic-ish and
 generated ONCE into decoy_conversations.json (reused across every task bank), so it's cheap at run time.
 
-Usage: uv run python sdebench/datasets/gen/gen_decoys.py [--n 60] [--out decoy_conversations.json]
+Usage: uv run python datasets/sdebench/gen/gen_decoys.py [--n 60] [--out decoy_conversations.json]
 Env: GEMINI_API_KEY; SDEBENCH_BOLTONS_HOST (required) -> a clone of github.com/vectorize-io/boltons.
 """
 import argparse, json, os, subprocess, sys

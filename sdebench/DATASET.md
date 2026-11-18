@@ -167,7 +167,7 @@ python validate.py            # all boltons-* tasks: fields, tests parse, manife
 To actually run the benchmark (build each task's repo, drive an agent, grade in Docker, count
 interventions), use the runner in
 [agent-memory-benchmark](https://github.com/vectorize-io/agent-memory-benchmark), which mounts this repo
-as a submodule at `sdebench/datasets` and runs e.g.
+as a submodule at `datasets/` (this folder at `datasets/sdebench`) and runs e.g.
 `uv run amb run --dataset sdebench --split boltons --mode coding --memory {vanilla|hindsight-coding}`.
 
 boltons is © Mahmoud Hashemi, BSD — used unmodified as a fixture. Traps, planted modules, tests,
