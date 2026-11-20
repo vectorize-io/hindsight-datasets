@@ -1,0 +1,259 @@
+{
+  "about": "One file per issue a corpus sweep of a Hindsight knowledge bank found (hindsight-system-evals, python -m hindsight_system_evals.kb_edge_cases harvest). expect: ready (found by query, and its passages holding text_contains, when given), failed or rejected (with error_contains in the reason). sha256 is the file's, checked by the eval that downloads it. Sources and their licenses: README.md.",
+  "cases": [
+    {
+      "id": "non-utf8-metadata",
+      "category": "video",
+      "file": "video/non-utf8-metadata.mov",
+      "source": "FATE mov/mov_alpha_straight.mov",
+      "issue": "Its QuickTime handler name is Latin-1 ('Module de gestion vid\\xe9o'); PyAV decoded metadata as strict UTF-8 and the file failed with a UnicodeDecodeError.",
+      "expect": "ready",
+      "sha256": "ccd769e6a6c23cd81a214a0d8e1cfa8ac6442aa8baf10a426ed58e01683a815f"
+    },
+    {
+      "id": "no-index",
+      "category": "video",
+      "file": "video/no-index.avi",
+      "source": "FATE h264/ref_10.avi",
+      "issue": "An AVI without an index refuses to seek (EPERM) and the container then gives no frames; it is now read from the start.",
+      "expect": "ready",
+      "sha256": "bedbbead30d8f87b2b335429a24ade2c7e42e39cfcc3d95fe01539926d1366ad"
+    },
+    {
+      "id": "damaged-video-packets",
+      "category": "video",
+      "file": "video/damaged-packets.mov",
+      "source": "FATE mov/displaymatrix.mov",
+      "issue": "A partial file with a bad H.264 packet: one packet the decoder refused failed the whole file, where ffmpeg skips it.",
+      "expect": "ready",
+      "sha256": "02ad3fcdc28a1c8d9d81384829f60c5c28cd23a5a8570cbb56d0f90647ba92b4"
+    },
+    {
+      "id": "damaged-audio-packets",
+      "category": "audio",
+      "file": "audio/damaged-packets.aac",
+      "source": "FATE aac/foo.aac",
+      "issue": "An AAC stream that runs out mid-frame: the last packet's decode error failed the file.",
+      "expect": "ready",
+      "sha256": "4439c5a704ed599e45d3b88fe135f994d32d2b65f5d0c0f6a8eb329ea69c45ec"
+    },
+    {
+      "id": "cut-off-upload",
+      "category": "video",
+      "file": "video/cut-off.mkv",
+      "source": "FATE mkv/1242-small.mkv",
+      "issue": "The first 100KB of a 22-minute video (an interrupted upload): every window past the data was empty and raised FileNotFoundError, so the part that was there was lost too.",
+      "expect": "ready",
+      "sha256": "40892f34d39ff6db3ae9dd281ed4aba22a34fea126291ec855a59dded5e7e155"
+    },
+    {
+      "id": "heic-photo",
+      "category": "image",
+      "file": "image/photo.heic",
+      "source": "FATE heif-conformance/C002.heic",
+      "issue": ".heic is a supported extension (every iPhone photo) but Pillow has no HEIF decoder: 'cannot identify image file'. Decoded through PyAV now.",
+      "expect": "ready",
+      "sha256": "2b836102e528f7b465b295724b6928c5725a5ac3fe326c6bb54e5e8a18fc180f"
+    },
+    {
+      "id": "float32-tiff",
+      "category": "image",
+      "file": "image/float32.tiff",
+      "source": "Pillow Tests/images/10ct_32bit_128.tiff",
+      "issue": "Control: a 32-bit float TIFF (scientific imaging) has no web format and is re-encoded as PNG.",
+      "expect": "ready",
+      "sha256": "dc2afd819a198d667137591e26a088181f54067dbc1f8bdec1cda7d67f39798e"
+    },
+    {
+      "id": "rotated-phone-video",
+      "category": "video",
+      "file": "video/rotated.mp4",
+      "source": "made here: 3s 160x120 with a 90 degree display matrix",
+      "issue": "Control: a portrait phone video carries its rotation as metadata.",
+      "expect": "ready",
+      "sha256": "6a019b5a1bc131daaccc72f5e6c30974cea98eed4cc16322a11014d776dbbdc1"
+    },
+    {
+      "id": "silent-video",
+      "category": "video",
+      "file": "video/silent.mp4",
+      "source": "made here: 3s, no audio track",
+      "issue": "Control: a screen recording without sound.",
+      "expect": "ready",
+      "sha256": "9be17b9009365e575db03dc68e58147230756f84cced4a2f5267d78b7cff4277"
+    },
+    {
+      "id": "sound-only-mp4",
+      "category": "audio",
+      "file": "audio/sound-only.mp4",
+      "source": "made here: 3s AAC in an .mp4, no video track",
+      "issue": "Control: a voice memo exported as .mp4 is ingested as audio.",
+      "expect": "ready",
+      "sha256": "cf892627ac8d1b2488788e015cc1d5db0c33a28a4d4cbdd2e60c6f44a2231685"
+    },
+    {
+      "id": "broken-pdf-page",
+      "category": "pdf",
+      "file": "pdf/broken-page.pdf",
+      "source": "pdf.js test/pdfs/Pages-tree-refs.pdf",
+      "issue": "Page 2's page tree loops: 'Failed to load page' raised, was retried three times, and page 1 was lost with it. A page that cannot load is now skipped.",
+      "expect": "ready",
+      "query": "Testcase Pages loop",
+      "sha256": "77c8817ea016296ea59e0991ea1a6d1440ef2480cdcd9acb59106938b649233f"
+    },
+    {
+      "id": "nul-bytes",
+      "category": "text",
+      "file": "text/nul-bytes.txt",
+      "source": "made here",
+      "issue": "Control: Postgres text cannot hold NUL; they are stripped.",
+      "expect": "ready",
+      "query": "kiln reaches 1200 degrees",
+      "text_contains": "Cool it overnight",
+      "sha256": "c2364671ca3e407e485ae3fca1f1bc3e001421bd22330eccc6f52fc91f02c3c3"
+    },
+    {
+      "id": "census-csv",
+      "category": "text",
+      "file": "text/census-table.csv",
+      "source": "Govdocs1 000565.csv, its first 10 KB",
+      "issue": "Dense numeric text: each window is thousands of tokens, and 32 windows of the whole file ran a CPU embedder past 10 GB. Text batches are capped by size now.",
+      "expect": "ready",
+      "query": "total population of the United States census profile",
+      "text_contains": "277,017,622",
+      "sha256": "61da1f12e0c2bcde782153a0a9bb09502e28cee63aa9dfc4e203266fdef3b015"
+    },
+    {
+      "id": "two-bodies-html",
+      "category": "text",
+      "file": "text/two-bodies.html",
+      "source": "Govdocs1 000740.html (a CBP newsletter page, public domain)",
+      "issue": "It opens <body> twice, the first time still inside <head> and empty; markitdown converts the first only, and 1,500 words failed 'nothing to search'.",
+      "expect": "ready",
+      "query": "unified to secure America's borders CBP newsletter",
+      "text_contains": "Unified to secure America",
+      "sha256": "8c2d087559ea1aec71897522ee9e118a6224af62d3e29276fba03d068fcc7bbb"
+    },
+    {
+      "id": "unsupported-codec",
+      "category": "video",
+      "file": "video/unsupported-codec.mp4",
+      "source": "FATE mov/uncv-rgb24.mp4",
+      "issue": "ISO uncompressed video, which PyAV opens without a codec context: an AttributeError, retried three times (~3 minutes). Fails at once now.",
+      "expect": "failed",
+      "error_contains": "no decodable video",
+      "sha256": "ebb16ac10b70c18e4576832701b5592470dbe6c23a5eee34551063a0b51ec77d"
+    },
+    {
+      "id": "truncated-mp4",
+      "category": "video",
+      "file": "video/truncated.mp4",
+      "source": "made here: the first half of an mp4 whose index is at the end",
+      "issue": "Control: nothing can be read without the index; ffmpeg cannot either.",
+      "expect": "failed",
+      "error_contains": "unreadable media",
+      "sha256": "5f8da7cc82a53229ef0f96c515c794eb2392a3bf675b16f83dfaca64159d0057"
+    },
+    {
+      "id": "encrypted-pdf",
+      "category": "pdf",
+      "file": "pdf/encrypted.pdf",
+      "source": "pdf.js test/pdfs/crypt_filters.pdf",
+      "issue": "Control: a password-protected PDF says so.",
+      "expect": "failed",
+      "error_contains": "password",
+      "sha256": "19e6370432a3f4edb77900afb3e8d8d6a71344fe0912854781c391a506668d0a"
+    },
+    {
+      "id": "jpeg-renamed-pdf",
+      "category": "pdf",
+      "file": "pdf/jpeg-renamed.pdf",
+      "source": "made here: a JPEG named .pdf",
+      "issue": "Control: the wrong extension is reported, not crashed on.",
+      "expect": "failed",
+      "error_contains": "unreadable PDF",
+      "sha256": "e210372fdd34920aac96b3deb84538ea6a64561d5481742690b1b1c49855d3e8"
+    },
+    {
+      "id": "not-a-zip-docx",
+      "category": "office",
+      "file": "office/not-a-zip.docx",
+      "source": "made here: a zip header and nothing else",
+      "issue": "Control: a broken Office file is reported.",
+      "expect": "failed",
+      "error_contains": "unreadable .docx",
+      "sha256": "c8eaa8e6cf537f4a4d33e57617703411eade8345cf710b7313530595a28971b9"
+    },
+    {
+      "id": "visa-form-docx",
+      "category": "office",
+      "file": "office/visa-form.docx",
+      "source": "Apache POI test-data/document/form_footnotes.docx",
+      "issue": "Control: a real Word form (tables, footnotes, an embedded picture) is read for its text.",
+      "expect": "ready",
+      "query": "visa application form consulate",
+      "text_contains": "VISA APPLICATION FORM",
+      "sha256": "a890294bfbdc63f6d03eab61efc1e98cb51d59f0920541150dd7082f9bdf31f1"
+    },
+    {
+      "id": "empty-file",
+      "category": "pdf",
+      "file": "pdf/empty.pdf",
+      "source": "made here: 0 bytes",
+      "issue": "Control: refused at upload.",
+      "expect": "rejected",
+      "error_contains": "is empty",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "renderer-crash-pdf",
+      "category": "pdf",
+      "file": "pdf/renderer-crash.pdf",
+      "source": "pdf.js test/pdfs/jpx_numcomps.pdf",
+      "issue": "A JPEG 2000 image that makes pdfium abort the process (SIGTRAP on Linux). Rendered inside the server, it took the API down for everyone; in a worker process it fails alone.",
+      "expect": "failed",
+      "error_contains": "renderer crashed",
+      "sha256": "fa0e65f443c750bc899fe1601b72e817b8160ceff5ad1db95247ddacd4cb15d4"
+    },
+    {
+      "id": "no-sentence-ends-pdf",
+      "category": "pdf",
+      "file": "pdf/no-sentence-ends.pdf",
+      "source": "pdf.js test/pdfs/perf_text_labels.pdf",
+      "issue": "A page of thousands of labels with no full stop was one 14,000-token sentence, which the embedder refused (EmbeddingGemma 2 reads 8,192 per input).",
+      "expect": "ready",
+      "sha256": "ebff364246168e02b0a358120b99c40b25156eeab27dbd62abebdbcb9867e413"
+    },
+    {
+      "id": "deep-table-docx",
+      "category": "office",
+      "file": "office/deep-table.docx",
+      "source": "Apache POI test-data/document/deep-table-cell.docx",
+      "issue": "Tables nested thousands deep: markitdown hit Python's recursion limit and the file failed; its text is now read from the XML.",
+      "expect": "ready",
+      "text_contains": "Nested level 4999",
+      "sha256": "31c5bfe1f68c98699cb356891de2e02fe223f633706d666c430ca79fd2cdf6bb"
+    },
+    {
+      "id": "header-only-docx",
+      "category": "office",
+      "file": "office/header-only.docx",
+      "source": "Apache POI test-data/document/Headers.docx",
+      "issue": "All its text is in its header and footer: markitdown reads the body only, and the file failed 'nothing to search'.",
+      "expect": "ready",
+      "text_contains": "Section 1",
+      "sha256": "bdf91038f9a5454355e6393b7b74fd819a4adc480b4a7011a86e878403952b5b"
+    },
+    {
+      "id": "markitdown-keyerror-docx",
+      "category": "office",
+      "file": "office/markitdown-keyerror.docx",
+      "source": "Apache POI test-data/document/60329.docx",
+      "issue": "A clinical protocol of 700 words that markitdown crashed on (KeyError 'w:type'); its text is now read from the XML.",
+      "expect": "ready",
+      "query": "sitagliptin plasma sCD14 trial",
+      "text_contains": "sitagliptin",
+      "sha256": "e5b4e66038f92ef589e12ea870b24cc7a3e0005cd7a53817abff1307404f7aa3"
+    }
+  ]
+}
